@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html style="background-color:rgb(120, 120, 120)">
+	<head>
+		<meta charset="utf-8">
+		<title>Gravity Simulator</title>
+		<style>
+			pre {
+				font-family: Consolas;
+				font-size: 120%;
+				border-style: solid;
+				white-space: pre-wrap;
+			}
+		</style>
+		<script src="Gravity.js" type="text/javascript" defer></script>
+	</head>
+	<body>
+		<h1>Gravity Simulator</h1>
+		<h2>Settings</h2>
+		<pre>
+			Universal Gravity Constant = <input type="number" min="0" id="universal_gravity" value="1" style="background-color:rgb(200, 200, 200)">; Anti Universal Gravity Constant = <input type="number" min="0" id="universal_anti_gravity" value="100" style="background-color:rgb(200, 200, 200)">;
+			Universal Density Constant = <input type="number" min="1" id="universal_density" value="1" style="background-color:rgb(200, 200, 200)">; Anti Universal Density Constant = <input type="number" min="1" id="universal_anti_density" value="1" style="background-color:rgb(200, 200, 200)">;
+			Universal Background Color: <input type="color" id="universal_background_color" style="background-color:rgb(200, 200, 200)">;
+		</pre>
+		<button id="reset" onclick="reset()" style="background-color:rgb(200, 200, 200)">Reload Config</button>
+		<h2>The Universe</h2>
+		<canvas id="universe_frame"></canvas>
+		<br>
+		<button id="power_switch" onclick="power_switch()" style="background-color:rgb(255, 0, 0)">Power ON/OFF</button>
+		<h2>Add Body</h2>
+		<h3>Add Single Body</h3>
+		<pre>
+			Mass = <input type="number" min="1" id="object_mass" value="1" style="background-color:rgb(200, 200, 200)">;
+			Spawn Location = { 
+				x = <input type="number" id="object_loc_x" value="0" style="background-color:rgb(200, 200, 200)">;
+				y = <input type="number" id="object_loc_y" value="0" style="background-color:rgb(200, 200, 200)">;
+			};
+			Spawn Velocity = { 
+				x = <input type="number" id="object_vel_x" value="0" style="background-color:rgb(200, 200, 200)">;
+				y = <input type="number" id="object_vel_y" value="0" style="background-color:rgb(200, 200, 200)">;
+			};
+			Color = <input type="color" id="object_color" value="#ffffff" style="background-color:rgb(200, 200, 200)">;
+			<button id="create_object" onclick="create_object()" style="background-color:rgb(200, 200, 200)">Add</button>
+			<button id="uncreate_object" onclick="uncreate_object()" style="background-color:rgb(200, 200, 200)">Undo</button>
+		</pre>
+		<h3>Add Random Bodies</h3>
+		<pre>
+			Count = <input type="number" min="1" id="random_objects_count" value="1" style="background-color:rgb(200, 200, 200)">;
+			Mass = {
+				min = <input type="number" min="1" id="random_objects_mass_min" value="10" style="background-color:rgb(200, 200, 200)">;
+				max = <input type="number" min="1" id="random_objects_mass_max" value="100" style="background-color:rgb(200, 200, 200)">;
+			};
+			Spawn Location = {
+				x = {
+					min = <input type="number" min="1" id="random_objects_loc_x_min" value="-300" style="background-color:rgb(200, 200, 200)">;
+					max = <input type="number" min="1" id="random_objects_loc_x_max" value="300" style="background-color:rgb(200, 200, 200)">;
+				};
+				y = {
+					min = <input type="number" min="1" id="random_objects_loc_y_min" value="-300" style="background-color:rgb(200, 200, 200)">;
+					max = <input type="number" min="1" id="random_objects_loc_y_min" value="300" style="background-color:rgb(200, 200, 200)">;
+				};
+			};
+			Spawn Velocity = {
+				x = {
+					min = <input type="number" min="1" id="random_objects_vel_x_min" value="-1" style="background-color:rgb(200, 200, 200)">;
+					max = <input type="number" min="1" id="random_objects_vel_x_min" value="1" style="background-color:rgb(200, 200, 200)">;
+				};
+				y = {
+					min = <input type="number" min="1" id="random_objects_vel_y_min" value="-1" style="background-color:rgb(200, 200, 200)">;
+					max = <input type="number" min="1" id="random_objects_vel_y_min" value="1" style="background-color:rgb(200, 200, 200)">;
+				};
+			};
+			<button id="create_random_objects" onclick="create_random_objects()" style="background-color:rgb(200, 200, 200)">Add</button>
+		</pre>
+	</body>
+</html>
