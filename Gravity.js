@@ -216,7 +216,7 @@ function Universe(frame, width, height) {
 	self.draw = draw;
 	function draw() {
 		if (isNumber(self.width) && self.width >= 0) {
-			frame.witth = self.width;
+			frame.width = self.width;
 		}
 		else {
 			self.width = Math.floor(window.innerWidth * DEFAULT_WIDTH_RATE);
@@ -271,12 +271,10 @@ function Universe(frame, width, height) {
 	function addPlanet(planet) {
 		if (getPlanetById(planet.id)) {
 			var newIndex = 0;
-			var id = planet.id + " " + newIndex;
+			var id = planet.id + " " + self.planets.length;
 			while (getPlanetById(id)) {
-				console.log("repeated id found in while");
 				newIndex++;
 				id = planet.id + " " + newIndex;
-				console.log("id = " + id);
 			}
 			planet.id = id;
 		}
