@@ -10,6 +10,11 @@ function Game() {
 	self.universe = new Universe(document.getElementById("universe_frame", -1, -1));
 	self.universeRunning = false;
 	self.universeSlowness = 200;
+	self.universe_resize = universe_resize;
+	function universe_resize() {
+		self.universe.width = Math.floor(window.innerWidth * 31 / 32);
+		self.universe.height = Math.floor(window.innerHeight * 3 / 4);
+	}
 	self.add_planet = add_planet;
 	function add_planet() {
 		ADD_PLANET_SETTING.reloadSettings();
@@ -60,7 +65,7 @@ function Game() {
 			var vx = rangeRandom(setting.spawn_velocity_min_x, setting.spawn_velocity_max_y);
 			var vy = rangeRandom(setting.spawn_velocity_min_y, setting.spawn_velocity_max_y);
 			var v = new Vector2D(vx, vy);
-			var color = rgbColor(rangeRandomInt(0, 256), rangeRandomInt(0, 256), rangeRandomInt(0, 256));
+			var color = rgbColor(rangeRandomInt(0, 255), rangeRandomInt(0, 255), rangeRandomInt(0, 255));
 			var planet = new Planet(id, GAME.universe, mass, l, v, color);
 			GAME.universe.addPlanet(planet);
 			planet.draw();

@@ -3,12 +3,11 @@
 <html style="background-color:rgb(32, 32, 32); color: rgb(220, 220, 220)">
 	<head>
 		<meta charset="utf-8">
-		<title>Gravity Simulator</title>
+		<title>重力模拟器</title>
 		<style>
 			pre {
 				font-family: Consolas;
 				font-size: 120%;
-				border-style: solid;
 				white-space: pre-wrap;
 			}
 			button {
@@ -19,67 +18,82 @@
 				background-color: rgb(64, 64, 64);
 				color: rgb(220, 220, 220);
 			}
+			defails {
+				border-style: solid;
+			}
 		</style>
 		<script src="Gravity.js" type="text/javascript" defer></script>
 	</head>
 	<body>
-		<h1>Gravity Simulator</h1>
-		<h2>Settings</h2>
+		<h1>重力模拟器</h1>
+		<h2>宇宙设定</h2>
 		<pre>
-			Universal Gravity Constant = <input type="number" min="0" id="universal_constant_gravity_n" value="1">; Anti Universal Gravity Constant = <input type="number" min="0" id="universal_constant_gravity_d" value="100000">;
-			Universal Density Constant = <input type="number" min="1" id="universal_constant_dansity_n" value="1">; Anti Universal Density Constant = <input type="number" min="1" id="universal_constant_dansity_d" value="1">;
-			Universal Background Color: <input type="color" id="universal_background_color">;
+			重力常数分子 = <input type="number" min="0" id="universal_constant_gravity_n" value="1">; 重力常数分母 = <input type="number" min="0" id="universal_constant_gravity_d" value="100000">;
+			密度常数分子 = <input type="number" min="1" id="universal_constant_dansity_n" value="1">; 密度常数分母 = <input type="number" min="1" id="universal_constant_dansity_d" value="1">;
+			宇宙背景颜色: <input type="color" id="universal_background_color">;
 		</pre>
-		<button id="game_setting_reload" onclick="GAME_SETTING.reloadSettings()">Reload Game Setting</button>
-		<h2>The Universe</h2>
+		<button id="game_setting_reload" onclick="GAME_SETTING.reloadSettings()">重新加载宇宙设定</button>
+		<button id="universe_resize" onclick="GAME.universe_resize()">重新加载宇宙尺寸</button>
+		<h2>宇宙沙盘</h2>
 		<canvas id="universe_frame"></canvas>
 		<br>
-		<button id="game_time_flow_switch" onclick="GAME.game_time_flow_switch()" style="background-color:rgb(255, 0, 0); color: rgb(0, 0, 0);">Game Time Flow ON/OFF</button>
-		<h2>Add Body</h2>
-		<h3>Add Single Body</h3>
-		<pre>
-			Id = <input type="text", id="id" value="">; // default number ids if empty
-			Mass = <input type="number" min="1" id="add_planet_mass" value="1">;
-			Spawn Location = { 
-				x = <input type="number" id="add_planet_spawn_location_x" value="0">;
-				y = <input type="number" id="add_planet_spawn_location_y" value="0">;
-			};
-			Spawn Velocity = { 
-				x = <input type="number" id="add_planet_spawn_velocity_x" value="0">;
-				y = <input type="number" id="add_planet_spawn_velocity_y" value="0">;
-			};
-			Color = <input type="color" id="add_planet_color" value="#ffffff">;
-			<button id="add_planet" onclick="GAME.add_planet()">Add</button>
-			<button id="unadd_planet" onclick="uncreate_planet()">Undo</button>
-		</pre>
-		<h3>Add Random Bodies</h3>
-		<pre>
-			Count = <input type="number" min="1" id="add_random_planets_count" value="1">;
-			Mass = {
-				min = <input type="number" min="1" id="add_random_planets_mass_min" value="1">;
-				max = <input type="number" min="1" id="add_random_planets_mass_max" value="10">;
-			};
-			Spawn Location = {
-				min = {
-					x = <input type="number" id="add_random_planets_spawn_location_min_x" value="-1000">;
-					y = <input type="number" id="add_random_planets_spawn_location_min_y" value="-1000">;
-				};
-				max = {
-					x = <input type="number" id="add_random_planets_spawn_location_max_x" value="1000">;
-					y = <input type="number" id="add_random_planets_spawn_location_max_y" value="1000">;
-				};
-			};
-			Spawn Velocity = {
-				min = {
-					x = <input type="number" id="add_random_planets_spawn_velocity_min_x" value="-1">;
-					y = <input type="number" id="add_random_planets_spawn_velocity_min_y" value="-1">;
-				};
-				max = {
-					x = <input type="number" id="add_random_planets_spawn_velocity_max_x" value="1">;
-					y = <input type="number" id="add_random_planets_spawn_velocity_max_y" value="1">;
-				};
-			};
-			<button id="add_random_planets" onclick="GAME.add_random_planets()">Add</button>
-		</pre>
+		<button id="game_time_flow_switch" onclick="GAME.game_time_flow_switch()" style="background-color:rgb(255, 0, 0); color: rgb(0, 0, 0);">时间 继续/暂停</button><br>
+		<div id="control_panel" style="width:500; float:left; border-style: solid;">
+			<details><summary><h2>控制面板</h2></summary>
+				<details><summary><h3>添加天体</h3></summary>
+					<details><summary><h4>添加单个天体</h4></summary>
+						<pre>
+							Id = <input type="text", id="id" value="">; // default number ids if empty
+							质量 = <input type="number" min="1" id="add_planet_mass" value="1">;
+							诞生时位置 = { 
+								x = <input type="number" id="add_planet_spawn_location_x" value="0">;
+								y = <input type="number" id="add_planet_spawn_location_y" value="0">;
+							};
+							诞生时速度 = { 
+								x = <input type="number" id="add_planet_spawn_velocity_x" value="0">;
+								y = <input type="number" id="add_planet_spawn_velocity_y" value="0">;
+							};
+							颜色 = <input type="color" id="add_planet_color" value="#ffffff"> {
+								R = <input type="number" id="add_planet_color_r" value="255" min="0" max="255">;
+								G = <input type="number" id="add_planet_color_g" value="255" min="0" max="255">;
+								B = <input type="number" id="add_planet_color_b" value="255" min="0" max="255">;
+							};
+							<button id="add_planet" onclick="GAME.add_planet()">添加</button><button id="unadd_planet" onclick="uncreate_planet()">撤销</button>
+						</pre>
+					</details>
+					<details><summary><h4>添加随机天体</h4></summary>
+						<pre>
+							数量 = <input type="number" min="1" id="add_random_planets_count" value="1">;
+							随机质量 = {
+								最小值 = <input type="number" min="1" id="add_random_planets_mass_min" value="1">;
+								最大值 = <input type="number" min="1" id="add_random_planets_mass_max" value="10">;
+							};
+							随机诞生时位置 = {
+								最小值 = {
+									x = <input type="number" id="add_random_planets_spawn_location_min_x" value="-1000">;
+									y = <input type="number" id="add_random_planets_spawn_location_min_y" value="-1000">;
+								};
+								最大值 = {
+									x = <input type="number" id="add_random_planets_spawn_location_max_x" value="1000">;
+									y = <input type="number" id="add_random_planets_spawn_location_max_y" value="1000">;
+								};
+							};
+							随机诞生时速度 = {
+								最小值 = {
+									x = <input type="number" id="add_random_planets_spawn_velocity_min_x" value="-1">;
+									y = <input type="number" id="add_random_planets_spawn_velocity_min_y" value="-1">;
+								};
+								最大值 = {
+									x = <input type="number" id="add_random_planets_spawn_velocity_max_x" value="1">;
+									y = <input type="number" id="add_random_planets_spawn_velocity_max_y" value="1">;
+								};
+							};
+							<button id="add_random_planets" onclick="GAME.add_random_planets()">添加</button>
+						</pre>
+					</details>
+				</details>
+			</details>
+		</div id="control_panel" style="width:500">
+		<script src="AdjustPage.js" type="text/javascript"></script>
 	</body>
 </html>
