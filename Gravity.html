@@ -26,7 +26,7 @@
 		<h1>Gravity Simulator</h1>
 		<h2>Settings</h2>
 		<pre>
-			Universal Gravity Constant = <input type="number" min="0" id="universal_constant_gravity_n" value="1">; Anti Universal Gravity Constant = <input type="number" min="0" id="universal_constant_gravity_d" value="100">;
+			Universal Gravity Constant = <input type="number" min="0" id="universal_constant_gravity_n" value="1">; Anti Universal Gravity Constant = <input type="number" min="0" id="universal_constant_gravity_d" value="100000">;
 			Universal Density Constant = <input type="number" min="1" id="universal_constant_dansity_n" value="1">; Anti Universal Density Constant = <input type="number" min="1" id="universal_constant_dansity_d" value="1">;
 			Universal Background Color: <input type="color" id="universal_background_color">;
 		</pre>
@@ -38,6 +38,7 @@
 		<h2>Add Body</h2>
 		<h3>Add Single Body</h3>
 		<pre>
+			Id = <input type="text", id="id" value="">; // default number ids if empty
 			Mass = <input type="number" min="1" id="add_planet_mass" value="1">;
 			Spawn Location = { 
 				x = <input type="number" id="add_planet_spawn_location_x" value="0">;
@@ -53,32 +54,32 @@
 		</pre>
 		<h3>Add Random Bodies</h3>
 		<pre>
-			Count = <input type="number" min="1" id="random_planets_count" value="1">;
+			Count = <input type="number" min="1" id="add_random_planets_count" value="1">;
 			Mass = {
-				min = <input type="number" min="1" id="random_planets_mass_min" value="10">;
-				max = <input type="number" min="1" id="random_planets_mass_max" value="100">;
+				min = <input type="number" min="1" id="add_random_planets_mass_min" value="1">;
+				max = <input type="number" min="1" id="add_random_planets_mass_max" value="10">;
 			};
 			Spawn Location = {
-				x = {
-					min = <input type="number" min="1" id="random_planets_loc_x_min" value="-300">;
-					max = <input type="number" min="1" id="random_planets_loc_x_max" value="300">;
+				min = {
+					x = <input type="number" id="add_random_planets_spawn_location_min_x" value="-1000">;
+					y = <input type="number" id="add_random_planets_spawn_location_min_y" value="-1000">;
 				};
-				y = {
-					min = <input type="number" min="1" id="random_planets_loc_y_min" value="-300">;
-					max = <input type="number" min="1" id="random_planets_loc_y_min" value="300">;
+				max = {
+					x = <input type="number" id="add_random_planets_spawn_location_max_x" value="1000">;
+					y = <input type="number" id="add_random_planets_spawn_location_max_y" value="1000">;
 				};
 			};
 			Spawn Velocity = {
-				x = {
-					min = <input type="number" min="1" id="random_planets_vel_x_min" value="-1">;
-					max = <input type="number" min="1" id="random_planets_vel_x_min" value="1">;
+				min = {
+					x = <input type="number" id="add_random_planets_spawn_velocity_min_x" value="-1">;
+					y = <input type="number" id="add_random_planets_spawn_velocity_min_y" value="-1">;
 				};
-				y = {
-					min = <input type="number" min="1" id="random_planets_vel_y_min" value="-1">;
-					max = <input type="number" min="1" id="random_planets_vel_y_min" value="1">;
+				max = {
+					x = <input type="number" id="add_random_planets_spawn_velocity_max_x" value="1">;
+					y = <input type="number" id="add_random_planets_spawn_velocity_max_y" value="1">;
 				};
 			};
-			<button id="create_random_planets" onclick="create_random_planets()">Add</button>
+			<button id="add_random_planets" onclick="GAME.add_random_planets()">Add</button>
 		</pre>
 	</body>
 </html>
