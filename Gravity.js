@@ -1,4 +1,4 @@
-var info_logging = false; // true if logging some information, false will not output info to console
+let info_logging = false; // true if logging some information, false will not output info to console
 
 const GAME_SETTING = new GameSetting();
 const GAME = new Game();
@@ -9,7 +9,7 @@ function Game() {
 	const self = this;
 	self.universe = new Universe(document.getElementById("universe_frame", -1, -1));
 	self.universeRunning = false;
-	self.universeSlowness = 200;
+	self.universeSlowness = 20;
 	self.universe_resize = universe_resize;
 	function universe_resize() {
 		self.universe.width = Math.floor(window.innerWidth * 31 / 32);
@@ -18,23 +18,14 @@ function Game() {
 	self.add_planet = add_planet;
 	function add_planet() {
 		ADD_PLANET_SETTING.reloadSettings();
-		var id = "no-id";
+		let id = ADD_PLANET_SETTING.id;
 		{
 			// init id
-			var defaultId = ADD_PLANET_SETTING.id === "";
-			if (defaultId) {
-				var idNum = 0;
-				id = "planet" + idNum;
-				while (self.universe.getPlanetById(id)) {
-					idNum++;
-					id = "planet" + idNum;
-				}
-			}
-			else {
-				id = ADD_PLANET_SETTING.id;
+			if (id === "") {
+				id = "planet";
 			}
 		}
-		var planet = new Planet(
+		let planet = new Planet(
 			id,
 			self.universe,
 			ADD_PLANET_SETTING.mass,
@@ -54,19 +45,19 @@ function Game() {
 	self.add_random_planets = add_random_planets;
 	function add_random_planets() {
 		ADD_RANDOM_PLANETS_SETTING.reloadSettings();
-		var count = ADD_RANDOM_PLANETS_SETTING.count;
-		for (var i = 0; i < count; i++) {
-			var id = "planet";
-			var setting = ADD_RANDOM_PLANETS_SETTING;
-			var mass = rangeRandom(setting.mass_min, setting.mass_max);
-			var lx = rangeRandom(setting.spawn_location_min_x, setting.spawn_location_max_x);
-			var ly = rangeRandom(setting.spawn_location_min_y, setting.spawn_location_max_y);
-			var l = new Vector2D(lx, ly);
-			var vx = rangeRandom(setting.spawn_velocity_min_x, setting.spawn_velocity_max_y);
-			var vy = rangeRandom(setting.spawn_velocity_min_y, setting.spawn_velocity_max_y);
-			var v = new Vector2D(vx, vy);
-			var color = rgbColor(rangeRandomInt(0, 255), rangeRandomInt(0, 255), rangeRandomInt(0, 255));
-			var planet = new Planet(id, GAME.universe, mass, l, v, color);
+		let count = ADD_RANDOM_PLANETS_SETTING.count;
+		for (let i = 0; i < count; i++) {
+			let id = "planet";
+			let setting = ADD_RANDOM_PLANETS_SETTING;
+			let mass = rangeRandom(setting.mass_min, setting.mass_max);
+			let lx = rangeRandom(setting.spawn_location_min_x, setting.spawn_location_max_x);
+			let ly = rangeRandom(setting.spawn_location_min_y, setting.spawn_location_max_y);
+			let l = new Vector2D(lx, ly);
+			let vx = rangeRandom(setting.spawn_velocity_min_x, setting.spawn_velocity_max_y);
+			let vy = rangeRandom(setting.spawn_velocity_min_y, setting.spawn_velocity_max_y);
+			let v = new Vector2D(vx, vy);
+			let color = rgbColor(rangeRandomInt(0, 255), rangeRandomInt(0, 255), rangeRandomInt(0, 255));
+			let planet = new Planet(id, GAME.universe, mass, l, v, color);
 			GAME.universe.addPlanet(planet);
 			planet.draw();
 		}
@@ -75,7 +66,7 @@ function Game() {
 	self.game_time_flow_switch = game_time_flow_switch;
 	function game_time_flow_switch() {
 		self.universeRunning = !(self.universeRunning);
-		var button_time_flow_switch = document.getElementById("game_time_flow_switch");
+		let button_time_flow_switch = document.getElementById("game_time_flow_switch");
 		if (self.universeRunning) {
 			button_time_flow_switch.style.backgroundColor = "#00FF00";
 			threadRun(universeEngine, universeRunning, universeWaiting);
@@ -107,17 +98,17 @@ function GameSetting() {
 	self.reloadSettings = reloadSettings;
 	function reloadSettings() {
 		logInfo("game settings reloading");
-		var input_constant_gravity_n = document.getElementById("universal_constant_gravity_n");
-		var input_constant_gravity_d = document.getElementById("universal_constant_gravity_d");
-		var input_constant_dansity_n = document.getElementById("universal_constant_dansity_n");
-		var input_constant_dansity_d = document.getElementById("universal_constant_dansity_d");
-		var input_background_color = document.getElementById("universal_background_color");
+		let input_constant_gravity_n = document.getElementById("universal_constant_gravity_n");
+		let input_constant_gravity_d = document.getElementById("universal_constant_gravity_d");
+		let input_constant_dansity_n = document.getElementById("universal_constant_dansity_n");
+		let input_constant_dansity_d = document.getElementById("universal_constant_dansity_d");
+		let input_background_color = document.getElementById("universal_background_color");
 		self.constant_gravity_n = getNumberFromInput(input_constant_gravity_n, self.constant_gravity_n);
 		self.constant_gravity_d = getNumberFromInput(input_constant_gravity_d, self.constant_gravity_d, function(value) {
 			return value > 0;
 		});
 		self.constant_dansity_n = getNumberFromInput(input_constant_dansity_n, self.constant_dansity_n);
-		self.constant_gravity_d = getNumberFromInput(input_constant_dansity_d, self.constant_dansity_d, function(value) {
+		self.constant_dansity_d = getNumberFromInput(input_constant_dansity_d, self.constant_dansity_d, function(value) {
 			return value > 0;
 		});
 		self.background_color = getColorFromInput(input_background_color, self.background_color);
@@ -137,13 +128,13 @@ function AddPlanetSetting() {
 	reloadSettings();
 	self.reloadSettings = reloadSettings;
 	function reloadSettings() {
-		var input_id = document.getElementById("id");
-		var input_mass = document.getElementById("add_planet_mass");
-		var input_spawn_location_x = document.getElementById("add_planet_spawn_location_x");
-		var input_spawn_location_y = document.getElementById("add_planet_spawn_location_y");
-		var input_spawn_velocity_x = document.getElementById("add_planet_spawn_velocity_x");
-		var input_spawn_velocity_y = document.getElementById("add_planet_spawn_velocity_y");
-		var input_color = document.getElementById("add_planet_color");
+		let input_id = document.getElementById("id");
+		let input_mass = document.getElementById("add_planet_mass");
+		let input_spawn_location_x = document.getElementById("add_planet_spawn_location_x");
+		let input_spawn_location_y = document.getElementById("add_planet_spawn_location_y");
+		let input_spawn_velocity_x = document.getElementById("add_planet_spawn_velocity_x");
+		let input_spawn_velocity_y = document.getElementById("add_planet_spawn_velocity_y");
+		let input_color = document.getElementById("add_planet_color");
 		self.id = getValueFromInput(input_id, self.id, function(value) {
 			return typeof value === "string" && value.length > 0;
 		})
@@ -174,17 +165,17 @@ function AddRandomPlanetsSetting() {
 	reloadSettings();
 	self.reloadSettings = reloadSettings;
 	function reloadSettings() {
-		var input_count = document.getElementById("add_random_planets_count");
-		var input_mass_min = document.getElementById("add_random_planets_mass_min");
-		var input_mass_max = document.getElementById("add_random_planets_mass_max");
-		var input_spawn_location_min_x = document.getElementById("add_random_planets_spawn_location_min_x");
-		var input_spawn_location_min_y = document.getElementById("add_random_planets_spawn_location_min_y");
-		var input_spawn_location_max_x = document.getElementById("add_random_planets_spawn_location_max_x");
-		var input_spawn_location_max_y = document.getElementById("add_random_planets_spawn_location_max_y");
-		var input_spawn_velocity_min_x = document.getElementById("add_random_planets_spawn_velocity_min_x");
-		var input_spawn_velocity_min_y = document.getElementById("add_random_planets_spawn_velocity_min_y");
-		var input_spawn_velocity_max_x = document.getElementById("add_random_planets_spawn_velocity_max_x");
-		var input_spawn_velocity_max_y = document.getElementById("add_random_planets_spawn_velocity_max_y");
+		let input_count = document.getElementById("add_random_planets_count");
+		let input_mass_min = document.getElementById("add_random_planets_mass_min");
+		let input_mass_max = document.getElementById("add_random_planets_mass_max");
+		let input_spawn_location_min_x = document.getElementById("add_random_planets_spawn_location_min_x");
+		let input_spawn_location_min_y = document.getElementById("add_random_planets_spawn_location_min_y");
+		let input_spawn_location_max_x = document.getElementById("add_random_planets_spawn_location_max_x");
+		let input_spawn_location_max_y = document.getElementById("add_random_planets_spawn_location_max_y");
+		let input_spawn_velocity_min_x = document.getElementById("add_random_planets_spawn_velocity_min_x");
+		let input_spawn_velocity_min_y = document.getElementById("add_random_planets_spawn_velocity_min_y");
+		let input_spawn_velocity_max_x = document.getElementById("add_random_planets_spawn_velocity_max_x");
+		let input_spawn_velocity_max_y = document.getElementById("add_random_planets_spawn_velocity_max_y");
 		self.count = getNumberFromInput(input_count, self.count, function(value) {
 			return value > 0;
 		});
@@ -234,11 +225,11 @@ function Universe(frame, width, height) {
 			self.height = Math.floor(window.innerHeight * DEFAULT_HEIGHT_RATE);
 			frame.height = self.height;
 		}
-		var ctx = self.frame.getContext("2d");
+		let ctx = self.frame.getContext("2d");
 		ctx.beginPath();
 		ctx.fillStyle = GAME_SETTING.background_color;
 		ctx.fillRect(0, 0, self.width, self.height);
-		for (var i = 0; i < self.planets.length; i++) {
+		for (let i = 0; i < self.planets.length; i++) {
 			self.planets[i].draw();
 		}
 	}
@@ -247,13 +238,13 @@ function Universe(frame, width, height) {
 		self.planets.forEach(function(planet) {
 			planet.updateLocation();
 		});
-		for (var i = 0; i < self.planets.length; i++) {
-			pi = self.planets[i];
+		for (let i = 0; i < self.planets.length; i++) {
+			let pi = self.planets[i];
 			if (!pi.existing) {
 				continue;
 			}
-			for (var j = i + 1; j < self.planets.length; j++) {
-				pj = self.planets[j];
+			for (let j = i + 1; j < self.planets.length; j++) {
+				let pj = self.planets[j];
 				if (!pj.existing) {
 					continue;
 				}
@@ -267,16 +258,16 @@ function Universe(frame, width, height) {
 				}
 			}
 		}
-		for (var i = 0; i < self.planets.length; i++) {
-			var planet = self.planets[i];
+		for (let i = 0; i < self.planets.length; i++) {
+			let planet = self.planets[i];
 			planet.updateVelocity();
 		}
 	}
 	self.addPlanet = addPlanet;
 	function addPlanet(planet) {
 		if (getPlanetById(planet.id)) {
-			var newIndex = 0;
-			var id = planet.id + " " + self.planets.length;
+			let newIndex = 0;
+			let id = planet.id + " " + self.planets.length;
 			while (getPlanetById(id)) {
 				newIndex++;
 				id = planet.id + " " + newIndex;
@@ -292,9 +283,9 @@ function Universe(frame, width, height) {
 	}
 	self.getPlanetById = getPlanetById;
 	function getPlanetById(id) {
-		var planets = self.planets;
-		for (var i = 0; i < planets.length; i++) {
-			var planet = planets[i];
+		let planets = self.planets;
+		for (let i = 0; i < planets.length; i++) {
+			let planet = planets[i];
 			if (planet.id === id) {
 				return planet;
 			}
@@ -314,7 +305,7 @@ function Planet(id, universe, mass, location, velocity, color) {
 	self.existing = true;
 	this.draw = draw;
 	function draw() {
-		var ctx = universe.frame.getContext("2d");
+		let ctx = universe.frame.getContext("2d");
 		ctx.beginPath();
 		ctx.fillStyle = self.color;
 		ctx.arc(Math.floor(self.location.x + universe.width / 2), Math.floor(self.location.y + universe.height / 2), getRadius(), 0, 2 * Math.PI);
@@ -323,7 +314,7 @@ function Planet(id, universe, mass, location, velocity, color) {
 	}
 	this.getRadius = getRadius;
 	function getRadius() {
-		var constantDansity = GAME_SETTING.constant_dansity_n / GAME_SETTING.constant_dansity_d;
+		let constantDansity = GAME_SETTING.constant_dansity_n / GAME_SETTING.constant_dansity_d;
 		return Math.ceil(Math.cbrt(self.mass / constantDansity))
 	}
 	self.updateLocation = updateLocation;
@@ -337,17 +328,17 @@ function Planet(id, universe, mass, location, velocity, color) {
 			if (isColliding(another)) {
 				return new Vector2D(0, 0);
 			}
-			var constantGravity = GAME_SETTING.constant_gravity_n / GAME_SETTING.constant_gravity_d;
-			var distanceVector = another.location.minusAnother(self.location);
-			var distanceScalar = distanceVector.getScalar();
-			var forceScalar = constantGravity * self.mass * another.mass / Math.pow(distanceScalar, 2);
-			var forceVector = distanceVector.vectorlizeScalar(forceScalar);
+			let constantGravity = GAME_SETTING.constant_gravity_n / GAME_SETTING.constant_gravity_d;
+			let distanceVector = another.location.minusAnother(self.location);
+			let distanceScalar = distanceVector.getScalar();
+			let forceScalar = constantGravity * self.mass * another.mass / Math.pow(distanceScalar, 2);
+			let forceVector = distanceVector.vectorlizeScalar(forceScalar);
 			return forceVector;
 		}
 		function getGravityFromAllOtherPlanets() {
-			var totalForceVector = new Vector2D(0, 0);
-			for (var i = 0; i < self.universe.planets.length; i++) {
-				var planet = self.universe.planets[i];
+			let totalForceVector = new Vector2D(0, 0);
+			for (let i = 0; i < self.universe.planets.length; i++) {
+				let planet = self.universe.planets[i];
 				if (self === planet) {
 					continue;
 				}
@@ -365,12 +356,12 @@ function Planet(id, universe, mass, location, velocity, color) {
 	self.collide = collide;
 	function collide(another) {
 		logInfo("collide happened between planets: \n    " + self + "\n    " + another);
-		var m1 = self.mass, m2 = another.mass;
-		var M1 = self.getMomentum(), M2 = another.getMomentum();
-		var m = m1 + m2;
-		var M = M1.addAnother(M2);
-		var v = M.multiplyScalar(1 / m);
-		var l = findMassCenter([self, another]); // this method is not working well
+		let m1 = self.mass, m2 = another.mass;
+		let M1 = self.getMomentum(), M2 = another.getMomentum();
+		let m = m1 + m2;
+		let M = M1.addAnother(M2);
+		let v = M.multiplyScalar(1 / m);
+		let l = findMassCenter([self, another]); // this method is not working well
 		self.mass = m;
 		// self.location = l
 		self.velocity = v;
@@ -384,9 +375,9 @@ function Planet(id, universe, mass, location, velocity, color) {
 		if (!another.existing) {
 			return false;
 		}
-		var distanceVector = another.location.minusAnother(self.location);
-		var distanceScalar = distanceVector.getScalar();
-		var flag = distanceScalar <= self.getRadius() + another.getRadius();
+		let distanceVector = another.location.minusAnother(self.location);
+		let distanceScalar = distanceVector.getScalar();
+		let flag = distanceScalar <= self.getRadius() + another.getRadius();
 		return flag;
 	}
 	self.getMomentum = getMomentum;
@@ -395,19 +386,19 @@ function Planet(id, universe, mass, location, velocity, color) {
 	}
 	self.toString = toString;
 	function toString() {
-		return "Planet: [id = " + self.id + ", mass = " + self.mass + ", location = " + self.location + ", velocity = " + self.velocity + ", color = " + self.color + "]";
+		return "Planet: [id = " + self.id + ", mass = " + self.mass.toFixed(2) + ", location = " + self.location + ", velocity = " + self.velocity + ", color = " + self.color + "]";
 	}
 	logInfo("planet created: " + self)
 }
 
 // below are the util methods:
 function addElementInArray(arr, ele) {
-	var index = arr.length;
+	let index = arr.length;
 	arr[index] = ele;
 }
 
 function removeElementInArray(arr, ele) {
-	var index = arr.indexOf(ele);
+	let index = arr.indexOf(ele);
 	if (index !== -1) {
 		arr.splice(index, 1);
 		return true;
@@ -424,9 +415,9 @@ function rangeRandomInt(min, max) {
 }
 
 function isColor(strColor) {
-	var s = new Option().style;
+	let s = new Option().style;
 	s.color = strColor;
-	var flag = s.color.length > 0;
+	let flag = s.color.length > 0;
 	return flag;
 }
 
@@ -459,7 +450,7 @@ function getColorFromInput(input, defaultValue, extraTestMethod) {
 }
 
 function getValueFromInput(input, defaultValue, testMethod, transformMethod) {
-	var value = input.value;
+	let value = input.value;
 	if (transformMethod) {
 		value = transformMethod(value);
 	}
@@ -473,7 +464,7 @@ function getValueFromInput(input, defaultValue, testMethod, transformMethod) {
 }
 
 function threadRun(code, keepRunning, wait) {
-	var fuc = function() {
+	let fuc = function() {
 		code();
 		if (keepRunning()) {
 			threadRun(code, keepRunning, wait);
@@ -483,14 +474,14 @@ function threadRun(code, keepRunning, wait) {
 }
 
 function findMassCenter(planets) {
-	var center = new Vector2D(0, 0);
-	var massCounted = 0;
-	for (var i = 0; i < planets.length; i++) {
-		var planet = planets[i];
-		var m = planet.mass;
-		var l = planet.location;
-		var dx = l.x - center.x, dy = l.y - center.y;
-		var ax = 0, ay = 0;
+	let center = new Vector2D(0, 0);
+	let massCounted = 0;
+	for (let i = 0; i < planets.length; i++) {
+		let planet = planets[i];
+		let m = planet.mass;
+		let l = planet.location;
+		let dx = l.x - center.x, dy = l.y - center.y;
+		let ax = 0, ay = 0;
 		if (dx !== 0) {
 			ax = dx * m / (massCounted + m);
 		}
@@ -510,7 +501,7 @@ function Vector2D(x, y) {
 	self.y = y;
 	self.getScalar = getScalar;
 	function getScalar() {
-		var calResult = Math.sqrt(Math.pow(self.x, 2) + Math.pow(self.y, 2));
+		let calResult = Math.sqrt(Math.pow(self.x, 2) + Math.pow(self.y, 2));
 		return calResult
 	}
 	self.addAnother = addAnother;
@@ -542,13 +533,13 @@ function Vector2D(x, y) {
 	}
 	self.getDistanceFromAnother = getDistanceFromAnother;
 	function getDistanceFromAnother(another) {
-		var dx = another.x - self.x;
-		var dy = another.y - self.y;
+		let dx = another.x - self.x;
+		let dy = another.y - self.y;
 		return Math.sqrt(Math.pow(dx, 2), Math.pow(dy, 2));
 	}
 	self.vectorlizeScalar = vectorlizeScalar;
 	function vectorlizeScalar(scalar) {
-		var base = getScalar();
+		let base = getScalar();
 		if (base === 0) {
 			return new Vector2D(0, 0);
 		}
@@ -556,7 +547,7 @@ function Vector2D(x, y) {
 	}
 	self.toString = toString;
 	function toString() {
-		return "[x = " + self.x + ", y = " + self.y + "]";
+		return "[x = " + self.x.toFixed(2) + ", y = " + self.y.toFixed(2) + "]";
 	}
 }
 
@@ -567,7 +558,7 @@ function rgbColor(r, g, b) {
 // Logging System
 function logInfo(message) {
 	if (info_logging) {
-		var completeMessage = "[info]: " + message;
+		let completeMessage = "[info]: " + message;
 		console.log(completeMessage);
 	}
 }

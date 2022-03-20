@@ -9,14 +9,11 @@ function adjust_pre_tag() {
 		var element = elements[e];
 		var content = element.innerHTML;
 		var lines = content.split("\n");
-		console.log(lines.length);
 		while (allStartsWithTab(lines)) {
 			for (var l = 0; l < lines.length; l++) {
 				var line = lines[l];
 				if (line.length > 0) {
-					console.log("line before = " + line);
 					line = line.replace("\t", "");
-					console.log("line after = " + line);
 					lines[l] = line;
 				}
 			}
