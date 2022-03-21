@@ -237,14 +237,18 @@ function Universe(frame, width, height) {
 			self.planets[i].draw();
 		}
 	}
+	// self.updatePlanetsLastRan = Date.now(); // this is for test purpose only. disable this for formal release.
 	self.updatePlanets = updatePlanets;
 	function updatePlanets() {
+		// console.log("updatePlanets(): " + (Date.now() - self.updatePlanetsLastRan));
+		self.updatePlanetsLastRan = Date.now();
 		let planets = self.planets;
 		// process new location
 		planets.forEach(function(planet) {
 			planet.updateLocation();
 		});
 		// process collide
+		// the 1/2 complaxity algorithm should not be applied here
 		for (let i = 0; i < planets.length; i++) {
 			let pi = planets[i];
 			for (let j = i + 1; j < planets.length; j++) {
@@ -260,11 +264,37 @@ function Universe(frame, width, height) {
 			}
 		}
 		// process new velocity
-		for (let i = 0; i < planets.length; i++) {
-			let pi = planets[i];
-			for (let j = i + 1; j < planets.length; j++) {
-				let pj = planets[j];
-				pi.adjustVelocityWithAnotherPlanet(pj);
+		/*
+			// this is old algorithm
+			for (let i = 0; i < planets.length; i++) {
+				let pi = planets[i];
+				setTimeout(function() {
+					for (let j = i + 1; j < planets.length; j++) {
+						let pj = planets[j];
+						pi.adjustVelocityWithAnotherPlanet(pj);
+					}
+				});
+			}
+		*/
+		// process new velocity new algorithm
+		updateVelocity(0, planets.length - 1);
+		function updateVelocity(begIndex, endIndex) {
+			if(endIndex - begIndex > 1) {
+				let midIndex = Math.floor((endIndex + begIndex) / 2);
+				updateVelocity(begIndex, midIndex);
+				updateVelocity(midIndex + 1, endIndex);
+				return;
+			}
+			else {
+				setTimeout(loop, 0, begIndex);
+				if(begIndex !== endIndex) {
+					setTimeout(loop, 0, endIndex);
+				}
+			}
+			function loop(indexi) {
+				for(let indexj = indexi + 1; indexj < planets.length; indexj++) {
+					planets[indexi].adjustVelocityWithAnotherPlanet(planets[indexj]);
+				}
 			}
 		}
 	}
