@@ -135,6 +135,10 @@ function AddPlanetSetting() {
 		let input_spawn_velocity_x = document.getElementById("add_planet_spawn_velocity_x");
 		let input_spawn_velocity_y = document.getElementById("add_planet_spawn_velocity_y");
 		let input_color = document.getElementById("add_planet_color");
+		let input_color_r = document.getElementById("add_planet_color_r");
+		let input_color_g = document.getElementById("add_planet_color_g");
+		let input_color_b = document.getElementById("add_planet_color_b");
+		let inputBlock_color = new InputBlock_Color(input_color, input_color_r, input_color_g, input_color_b);
 		self.id = getValueFromInput(input_id, self.id, function(value) {
 			return typeof value === "string" && value.length > 0;
 		})
@@ -235,19 +239,16 @@ function Universe(frame, width, height) {
 	}
 	self.updatePlanets = updatePlanets;
 	function updatePlanets() {
-		self.planets.forEach(function(planet) {
+		let planets = self.planets;
+		// process new location
+		planets.forEach(function(planet) {
 			planet.updateLocation();
 		});
-		for (let i = 0; i < self.planets.length; i++) {
-			let pi = self.planets[i];
-			if (!pi.existing) {
-				continue;
-			}
-			for (let j = i + 1; j < self.planets.length; j++) {
-				let pj = self.planets[j];
-				if (!pj.existing) {
-					continue;
-				}
+		// process collide
+		for (let i = 0; i < planets.length; i++) {
+			let pi = planets[i];
+			for (let j = i + 1; j < planets.length; j++) {
+				let pj = planets[j];
 				if (pi.isColliding(pj)) {
 					if (pi.mass >= pj.mass) {
 						pi.collide(pj);
@@ -258,9 +259,13 @@ function Universe(frame, width, height) {
 				}
 			}
 		}
-		for (let i = 0; i < self.planets.length; i++) {
-			let planet = self.planets[i];
-			planet.updateVelocity();
+		// process new velocity
+		for (let i = 0; i < planets.length; i++) {
+			let pi = planets[i];
+			for (let j = i + 1; j < planets.length; j++) {
+				let pj = planets[j];
+				pi.adjustVelocityWithAnotherPlanet(pj);
+			}
 		}
 	}
 	self.addPlanet = addPlanet;
@@ -321,13 +326,12 @@ function Planet(id, universe, mass, location, velocity, color) {
 	function updateLocation() {
 		self.location.meAddAnother(self.velocity);
 	}
-	self.updateVelocity = updateVelocity;
-	function updateVelocity() {
-		self.velocity.meAddAnother(getAcceleration());
+	self.adjustVelocityWithAnotherPlanet = adjustVelocityWithAnotherPlanet;
+	function adjustVelocityWithAnotherPlanet(another) {
+		let force = getGravityFromAnotherPlanet(another);
+		self.applyForce(force);
+		another.applyForce(force.multiplyScalar(-1));
 		function getGravityFromAnotherPlanet(another) {
-			if (isColliding(another)) {
-				return new Vector2D(0, 0);
-			}
 			let constantGravity = GAME_SETTING.constant_gravity_n / GAME_SETTING.constant_gravity_d;
 			let distanceVector = another.location.minusAnother(self.location);
 			let distanceScalar = distanceVector.getScalar();
@@ -335,23 +339,11 @@ function Planet(id, universe, mass, location, velocity, color) {
 			let forceVector = distanceVector.vectorlizeScalar(forceScalar);
 			return forceVector;
 		}
-		function getGravityFromAllOtherPlanets() {
-			let totalForceVector = new Vector2D(0, 0);
-			for (let i = 0; i < self.universe.planets.length; i++) {
-				let planet = self.universe.planets[i];
-				if (self === planet) {
-					continue;
-				}
-				if (!planet.existing) {
-					continue;
-				}
-				totalForceVector = totalForceVector.addAnother(getGravityFromAnotherPlanet(planet));
-			}
-			return totalForceVector;
-		}
-		function getAcceleration() {
-			return getGravityFromAllOtherPlanets().multiplyScalar(1 / self.mass);
-		}
+	}
+	self.applyForce = applyForce;
+	function applyForce(force) {
+		let acce = force.multiplyScalar(1 / self.mass);
+		self.velocity.meAddAnother(acce);
 	}
 	self.collide = collide;
 	function collide(another) {
@@ -551,9 +543,63 @@ function Vector2D(x, y) {
 	}
 }
 
+function InputBlock_Color(inputColor, inputR, inputG, inputB) {
+	const self = this;
+	self.inputColor = inputColor;
+	self.inputR = inputR;
+	self.inputG = inputG;
+	self.inputB = inputB;
+	inputColor.addEventListener("input", function() {
+		let hex = inputColor.value;
+		let rgb = hexToRGBComponents(hex);
+		inputR.value = rgb[0];
+		inputG.value = rgb[1];
+		inputB.value = rgb[2];
+	});
+	self.inputR.addEventListener("input", adjustRGBInput);
+	self.inputG.addEventListener("input", adjustRGBInput);
+	self.inputB.addEventListener("input", adjustRGBInput);
+	function adjustRGBInput() {
+		let r = getNumberFromInput(self.inputR, 255, goodRange);
+		let g = getNumberFromInput(self.inputG, 255, goodRange);
+		let b = getNumberFromInput(self.inputB, 255, goodRange);
+		inputColor.value = rgbComponentsToHex(r, g, b);
+		function goodRange(value) {
+			return value <= 255 && value >= 0;
+		}
+	}
+}
+
 function rgbColor(r, g, b) {
 	return "rgb(" + r + ", " + g + ", " + b + ")";
 }
+
+function rgbComponentsToHex(r, g, b) {
+	return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+	function componentToHex(c) {
+		var hex = c.toString(16);
+		return hex.length == 1 ? "0" + hex : hex;
+	}
+}
+
+function hexToRgb(hex) {
+	let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	return result ? {
+		r: parseInt(result[1], 16),
+		g: parseInt(result[2], 16),
+		b: parseInt(result[3], 16)
+	} : null;
+}
+
+function hexToRGBComponents(hex) {
+	let arr = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	let result = [];
+	result[0] = parseInt(arr[1], 16);
+	result[1] = parseInt(arr[2], 16);
+	result[2] = parseInt(arr[3], 16);
+	return result;
+}
+
 
 // Logging System
 function logInfo(message) {
